@@ -1,0 +1,7 @@
+S src
+S src_test
+
+B _build
+B _build/src
+B _build/src_test
+

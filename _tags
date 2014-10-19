@@ -1,0 +1,10 @@
+true: bin_annot
+true: debug
+true: package(compiler-libs.common, ppx_deriving, yojson)
+true: package(str)
+true: package(bigarray)
+true: thread
+# true: bisect
+
+<src>: include
+
