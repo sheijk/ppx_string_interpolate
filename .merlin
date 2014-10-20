@@ -5,3 +5,6 @@ B _build
 B _build/src
 B _build/src_test
 
+PKG str
+PKG ppx_tools
+
