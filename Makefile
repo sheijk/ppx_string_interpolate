@@ -1,19 +1,13 @@
 
-ifeq "$(COVERAGE)" "1"
-OCAMLBUILD_FLAGS += -tag 'package(bisect)' -tag 'syntax(camlp4o)' -tag 'syntax(bisect pp)'
+src/ppx_string.native: src/ppx_string.ml
+	ocamlfind ocamlopt -o $@ $< -package ppx_tools -linkpkg
 
-coverage: test
-	bisect-report -I _build bisect*.out -html coverage_report
-endif
+src_test/app.native: src_test/app.ml src/ppx_string.native
+	ocamlfind ocamlopt -o $@ $< -ppx ./src/ppx_string.native
 
-all:
-	ocamlbuild -use-ocamlfind $(OCAMLBUILD_FLAGS) src_test/app.native
-
-test: all
-	rm -f bisect*.out
-	./app.native
+test: src_test/app.native
+	./src_test/app.native
 
 clean:
-	ocamlbuild -clean
-	rm -f bisect*.out
+	rm -f {src,src_test}/*.{cmi,cmx,o,native}
 

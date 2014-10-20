@@ -1,5 +1,7 @@
 open Printf
 
 let () =
-  printf "hello, pxx_string\n"
+  let msg = [%str "hello, pxx_string\n"] in
+  print_string msg;
+  print_newline()
 

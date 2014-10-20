@@ -3,3 +3,7 @@
 /_build
 /coverage_report
 bisect*.out
+*.cmi
+*.cmx
+*.native
+*.o
