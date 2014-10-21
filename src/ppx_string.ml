@@ -7,6 +7,8 @@ open Longident
 type part = String of string | Var of string
 [@@deriving Show]
 
+exception Parse_error of string * int
+
 let parse_string str =
   let str_len = String.length str in
   let parts = ref [] in
@@ -33,11 +35,7 @@ let parse_string str =
   in
   let expect chr =
     if not (look_at chr) then
-      failwith (Printf.sprintf "expected %c at index %d" chr !pos)
-  in
-  let expect_eof yesno =
-    if yesno <> (!pos >= str_len) then
-      failwith "parse_string"
+      raise (Parse_error (Printf.sprintf "expected %c" chr, !pos))
   in
 
   while !pos < str_len do
@@ -56,6 +54,19 @@ let parse_string str =
   done;
   List.rev !parts
 
+let rec to_str_code = function
+  | [] ->
+     [%expr ""]
+  | hd :: tl ->
+     let hd_expr =
+       match hd with
+         | String str ->
+            Exp.constant ~loc:!(Ast_helper.default_loc) (Const_string (str, None))
+         | Var name ->
+            Exp.ident @@ { txt = Longident.parse name; loc = !(Ast_helper.default_loc) }
+     in
+     [%expr ([%e hd_expr] ^ [%e to_str_code tl])]
+
 let getenv_mapper argv =
   (* Our getenv_mapper only overrides the handling of expressions in the default mapper. *)
   { default_mapper with
@@ -70,22 +81,15 @@ let getenv_mapper argv =
           PStr [{ pstr_desc =
                   Pstr_eval ({ pexp_loc  = loc;
                                pexp_desc = Pexp_constant (Const_string (sym, None))}, _)}] ->
-           let parts = parse_string sym in
-           Printf.printf "parts = %s\n" @@ String.concat ", " @@ List.map show_part parts;
-           let rec to_str_code = function
-             | [] -> [%expr ""]
-             | hd :: tl ->
-                let hd_expr =
-                  match hd with
-                    | String str ->
-                       Exp.constant ~loc (Const_string (str, None))
-                    | Var name ->
-                       Exp.ident @@ { txt = Longident.parse name; loc }
-                in
-                [%expr ([%e hd_expr] ^ [%e to_str_code tl])]
-           in
+           begin
+             try
+               let parts = parse_string sym in
+               (* Printf.printf "parts = %s\n" @@ String.concat ", " @@ List.map show_part parts; *)
+               Ast_helper.with_default_loc loc (fun () -> to_str_code parts)
 
-           to_str_code parts
+             with Parse_error (message, pos) ->
+               failwith "wurst"
+           end
         | _ ->
           raise (Location.Error (
                   Location.error ~loc "[%str] accepts a string, e.g. [%str \"USER\"]"))

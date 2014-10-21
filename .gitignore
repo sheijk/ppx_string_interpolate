@@ -7,3 +7,6 @@ bisect*.out
 *.cmx
 *.native
 *.o
+/src_test/*.out
+/src_test/*.test
+/build/
