@@ -9,15 +9,16 @@ src_test/%.native: src_test/%.ml src/ppx_string.native
 
 clean:
 	rm -f {src,src_test}/*.{cmi,cmx,o,native}
+	$(foreach case, $(FAIL_CASES), rm -f src_test/fail_$(case).{out,test})
 
 ################################################################################
 # Tests
 
-FAIL_CASES = invalid_var
+FAIL_CASES = invalid_var no_closing_paren unescaped_dollar
 
 src_test/fail_%.test src_test/fail_%.out: src_test/fail_%.ml
 	-(ocamlfind ocamlopt -o $@ $< -ppx ./src/ppx_string.native 2>&1) > $(@:.test=.out)
-	grep "File \"$(<)\", line 4" $(@:.test=.out) || (cat $(@:.test=.out); exit 1)
+	grep "File \"$(<)\", line 4" $(@:.test=.out) > /dev/null
 	touch $@
 
 .PHONY: test

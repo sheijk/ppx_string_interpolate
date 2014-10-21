@@ -5,5 +5,6 @@ let () =
   let mood = "fine" in
   let msg = [%str "hello, $(name) are you $(mood)?\n"] in
   print_string msg;
+  print_string "testing double dollar: $$(name)";
   print_newline()
 

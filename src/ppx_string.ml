@@ -35,7 +35,7 @@ let parse_string str =
   in
   let expect chr =
     if not (look_at chr) then
-      raise (Parse_error (Printf.sprintf "expected %c" chr, !pos))
+      raise (Parse_error (Printf.sprintf "Expected %c" chr, !pos))
   in
 
   while !pos < str_len do
@@ -50,7 +50,8 @@ let parse_string str =
       expect ')';
       add (Var (String.sub str (quote_pos + 2) (quote_end - quote_pos - 2)));
       incr pos;
-    end
+    end else if !pos < str_len then
+      raise (Parse_error (Printf.sprintf "Expected $ or (", !pos))
   done;
   List.rev !parts
 
@@ -84,11 +85,17 @@ let getenv_mapper argv =
            begin
              try
                let parts = parse_string sym in
-               (* Printf.printf "parts = %s\n" @@ String.concat ", " @@ List.map show_part parts; *)
                Ast_helper.with_default_loc loc (fun () -> to_str_code parts)
 
              with Parse_error (message, pos) ->
-               failwith "wurst"
+               let string_start = loc.Location.loc_start.Lexing.pos_cnum in
+               let loc = { loc with
+                           Location.loc_start = {
+                             loc.Location.loc_start with Lexing.pos_cnum = string_start + 1 + pos };
+                           loc_end = { loc.Location.loc_end with Lexing.pos_cnum = string_start + 2 + pos } }
+               in
+               let error = Location.error ~loc ("Error: " ^ message) in
+               raise (Location.Error error)
            end
         | _ ->
           raise (Location.Error (
