@@ -9,6 +9,9 @@ type part = String of string | Var of string
 
 exception Parse_error of string * int
 
+(** Using \\ works but will produce warnings from the lexer. *)
+let escapeChar = '$'
+
 let parse_string str =
   let str_len = String.length str in
   let parts = ref [] in
@@ -39,11 +42,11 @@ let parse_string str =
   in
 
   while !pos < str_len do
-    let quote_pos = skip ((<>) '$') in
+    let quote_pos = skip ((<>) escapeChar) in
     add_string_until quote_pos;
     incr pos;
-    if look_at '$' then
-      add (String "$")
+    if look_at escapeChar then
+      add (String (String.make 1 escapeChar))
     else if look_at '(' then begin
       let quote_end = skip ((<>) ')') in
       pos := quote_end;
