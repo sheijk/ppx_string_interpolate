@@ -1,10 +1,29 @@
--*- mode: org -*-
 
-Simple string interpolation using the ppx extension points API.
+Simple string interpolation using OCaml's ppx extension points API.
+
+* How to use
+
+Use like [%str "some string"]. Use $(name) to insert the value of variable
+"name" which needs to have type string. Use a double dollar to insert an actual
+dollar character.
+
+#+begin_src tuareg
+let name = "mario"
+print_string [%str "It's a meee, $(name)\n"]
+#+end_src
+
+See directory src_test for examples on what to do and not to do.
 
 * How to build
 
-Simply call "make" and you're done.
+- install OCaml 4.02 or newer
+- install opam
+- install dependencies
+  opam install 
+
+- make all
+  
+Test by running 'make test'
 
 * Contact
 
