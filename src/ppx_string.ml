@@ -45,16 +45,17 @@ let parse_string str =
     let quote_pos = skip ((<>) escapeChar) in
     add_string_until quote_pos;
     incr pos;
-    if look_at escapeChar then
+    if look_at escapeChar then begin
+      incr pos;
       add (String (String.make 1 escapeChar))
-    else if look_at '(' then begin
+    end else if look_at '(' then begin
       let quote_end = skip ((<>) ')') in
       pos := quote_end;
       expect ')';
       add (Var (String.sub str (quote_pos + 2) (quote_end - quote_pos - 2)));
       incr pos;
     end else if !pos < str_len then
-      raise (Parse_error (Printf.sprintf "Expected $ or (", !pos))
+      raise (Parse_error (Printf.sprintf "Expected %c or (" escapeChar, !pos))
   done;
   List.rev !parts
 
