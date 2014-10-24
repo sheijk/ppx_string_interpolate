@@ -89,7 +89,7 @@ let getenv_mapper argv =
         | (* Should have a single structure item, which is evaluation of a constant string. *)
           PStr [{ pstr_desc =
                   Pstr_eval ({ pexp_loc  = loc;
-                               pexp_desc = Pexp_constant (Const_string (sym, None))}, _)}] ->
+                               pexp_desc = Pexp_constant (Const_string (sym, _))}, _)}] ->
            begin
              try
                let parts = parse_string sym in
