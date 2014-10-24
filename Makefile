@@ -1,8 +1,10 @@
 
+PPX_STRING_PACKAGES = -package ppx_tools -package ppx_deriving -package ppx_tools.metaquot -package sedlex
+
 all: src/ppx_string.native src_test/app.native
 
 src/ppx_string.native: src/ppx_string.ml
-	ocamlfind ocamlopt -o $@ $< -package ppx_tools -package ppx_deriving -package ppx_tools.metaquot -linkpkg
+	ocamlfind ocamlopt -o $@ $< $(PPX_STRING_PACKAGES) -linkpkg
 
 src_test/%.native: src_test/%.ml src/ppx_string.native
 	ocamlfind ocamlopt -o $@ $< -ppx ./src/ppx_string.native
@@ -14,7 +16,7 @@ clean:
 ################################################################################
 # Tests
 
-FAIL_CASES = invalid_var no_closing_paren unescaped_dollar
+FAIL_CASES = invalid_var no_closing_paren unescaped_dollar dollar_at_end_of_string
 
 src_test/fail_%.test src_test/fail_%.out: src_test/fail_%.ml
 	-(ocamlfind ocamlopt -o $@ $< -ppx ./src/ppx_string.native 2>&1) > $(@:.test=.out)
@@ -39,7 +41,7 @@ FLYMAKE_BUILD=$(BUILD_DIR)/flymake-last-build.txt
 
 .PHONY: flymake.ml.check
 flymake.ml.check:
-	@(ocamlfind ocamlopt -package ppx_tools -package ppx_deriving -package ppx_tools.metaquot -c $(CHK_SOURCES) -o /tmp/flymake_temp.cmx 2>&1) | sed 's/_flymake//g' | tee $(FLYMAKE_BUILD)
+	@(ocamlfind ocamlopt $(PPX_STRING_PACKAGES) -c $(CHK_SOURCES) -o /tmp/flymake_temp.cmx 2>&1) | sed 's/_flymake//g' | tee $(FLYMAKE_BUILD)
 
 .PHONY: flymake.mli.check
 flymake.mli.check: flymake.ml.check

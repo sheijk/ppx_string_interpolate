@@ -13,50 +13,38 @@ exception Parse_error of string * int
 let escapeChar = '$'
 
 let parse_string str =
-  let str_len = String.length str in
   let parts = ref [] in
-  let pos = ref 0 in
-
-  let add part =
-    parts := part :: !parts;
+  let add item =
+    parts := item :: !parts;
   in
-  let add_string_until new_pos =
-    parts := String (String.sub str !pos (new_pos - !pos)) :: !parts;
-    pos := new_pos
+  let buf = Sedlexing.Latin1.from_string str in
+  let pos buf =
+    let start, _ = Sedlexing.loc buf in
+    start
   in
-  let skip test =
-    let rec loop n =
-      if n < str_len && test str.[n] then
-        loop (n+1)
-      else
-        n
-    in
-    loop !pos
+  let rec loop() =
+    match%sedlex buf with
+      | Plus (Compl '$') ->
+         add @@ String (Sedlexing.Latin1.lexeme buf);
+         loop()
+      | "$$" ->
+         add @@ String (Sedlexing.Latin1.lexeme buf);
+         loop()
+      | "$(", Plus (Compl ')'), ')' ->
+         let token = Sedlexing.Latin1.lexeme buf in
+         let var = String.sub token 2 (String.length token - 3) in
+         add @@ Var var;
+         loop()
+      | ('$', Plus (Compl ('$' | '('))) | ('$', eof) ->
+         raise (Parse_error ("Expected $ to be followed by '$' or '('", pos buf + 1))
+      | "$(", Plus (Compl ')'), eof ->
+         raise (Parse_error ("Expected closing ')' but found end of string", String.length str))
+      | eof ->
+         ()
+      | _ ->
+         raise (Parse_error ("Unexpected character", pos buf))
   in
-  let look_at chr =
-    !pos < str_len && str.[!pos] = chr
-  in
-  let expect chr =
-    if not (look_at chr) then
-      raise (Parse_error (Printf.sprintf "Expected %c" chr, !pos))
-  in
-
-  while !pos < str_len do
-    let quote_pos = skip ((<>) escapeChar) in
-    add_string_until quote_pos;
-    incr pos;
-    if look_at escapeChar then begin
-      incr pos;
-      add (String (String.make 1 escapeChar))
-    end else if look_at '(' then begin
-      let quote_end = skip ((<>) ')') in
-      pos := quote_end;
-      expect ')';
-      add (Var (String.sub str (quote_pos + 2) (quote_end - quote_pos - 2)));
-      incr pos;
-    end else if !pos < str_len then
-      raise (Parse_error (Printf.sprintf "Expected %c or (" escapeChar, !pos))
-  done;
+  loop();
   List.rev !parts
 
 let to_str_code parts =
