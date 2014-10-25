@@ -3,12 +3,12 @@ Simple string interpolation using OCaml's ppx extension points API.
 
 * How to use
 
-Use like [%str "some string"]. Use $(name) to insert the value of variable
-"name" which needs to have type string. Use a double dollar to insert an actual
-dollar character.
+Write [%str "some string"] anywhere a string expression is expected. Use $(name)
+to insert the value of variable "name" whose types needs to be string. Use $$ to
+insert an actual dollar character.
 
 #+begin_src tuareg
-let name = "mario"
+let name = "mario" in
 print_string [%str "It's a meee, $(name)\n"]
 #+end_src
 
@@ -16,11 +16,10 @@ See directory src_test for examples on what to do and not to do.
 
 * How to build
 
-- install OCaml 4.02 or newer
-- install opam
+- install OCaml 4.02 (or newer)
+- install opam 1.1.1 (or newer)
 - install dependencies
-  opam install 
-
+  opam install sedlex ppx_tools ppx_deriving
 - make all
   
 Test by running 'make test'
