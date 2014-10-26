@@ -1,0 +1,4 @@
+description = "A simple ppx filter for string interpolation"
+version = "0.1"
+requires = "sedlex, ppx_tools, ppx_deriving"
+ppx = "./src/ppx_string.native"

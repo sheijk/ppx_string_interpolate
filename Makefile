@@ -13,6 +13,16 @@ clean:
 	rm -f {src,src_test}/*.{cmi,cmx,o,native}
 	$(foreach case, $(FAIL_CASES), rm -f src_test/fail_$(case).{out,test})
 
+
+INSTALL_FILES = META src/ppx_string.native
+
+.PHONY: install
+install:
+	ocamlfind install ppx_string_interpolate $(INSTALL_FILES)
+
+uninstall:
+	ocamlfind remove ppx_string_interpolate
+
 ################################################################################
 # Tests
 
