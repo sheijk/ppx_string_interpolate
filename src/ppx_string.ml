@@ -16,7 +16,7 @@ let parse_string str =
   let add item =
     parts := item :: !parts;
   in
-  let buf = Sedlexing.Latin1.from_string str in
+  let buf = Sedlexing.Utf8.from_string str in
   let pos buf =
     let start, _ = Sedlexing.loc buf in
     start
@@ -24,13 +24,13 @@ let parse_string str =
   let rec loop() =
     match%sedlex buf with
       | Plus (Compl '$') ->
-         add @@ String (Sedlexing.Latin1.lexeme buf);
+         add @@ String (Sedlexing.Utf8.lexeme buf);
          loop()
       | "$$" ->
-         add @@ String (Sedlexing.Latin1.lexeme buf);
+         add @@ String (Sedlexing.Utf8.lexeme buf);
          loop()
       | "$(", Plus (Compl ')'), ')' ->
-         let token = Sedlexing.Latin1.lexeme buf in
+         let token = Sedlexing.Utf8.lexeme buf in
          let var = String.sub token 2 (String.length token - 3) in
          add @@ Var var;
          loop()

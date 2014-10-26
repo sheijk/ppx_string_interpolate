@@ -30,7 +30,6 @@ Test by running 'make test'
     lexer on the string, skip over balanced parenthesis and pass this to OCaml
     Parse.expression.
   - check if to_str_code can be simplified using Ast_convenience.list
-  - Use Utf8 instead of Latin1, check for valid identifier
 
 * Contact
 

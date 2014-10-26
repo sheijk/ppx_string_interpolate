@@ -26,7 +26,7 @@ uninstall:
 ################################################################################
 # Tests
 
-FAIL_CASES = invalid_var no_closing_paren unescaped_dollar dollar_at_end_of_string
+FAIL_CASES = invalid_var invalid_var_name no_closing_paren unescaped_dollar dollar_at_end_of_string
 
 src_test/fail_%.test src_test/fail_%.out: src_test/fail_%.ml
 	-(ocamlfind ocamlopt -o $@ $< -ppx ./src/ppx_string.native 2>&1) > $(@:.test=.out)
