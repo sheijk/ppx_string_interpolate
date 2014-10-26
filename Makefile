@@ -4,10 +4,10 @@ PPX_STRING_PACKAGES = -package ppx_tools -package ppx_deriving -package ppx_tool
 all: src/ppx_string.native src_test/app.native
 
 src/ppx_string.native: src/ppx_string.ml
-	ocamlfind ocamlopt -o $@ $< $(PPX_STRING_PACKAGES) -linkpkg
+	ocamlfind ocamlopt -o $@ $< $(OCAMLOPT_FLAGS) $(PPX_STRING_PACKAGES) -linkpkg
 
 src_test/%.native: src_test/%.ml src/ppx_string.native
-	ocamlfind ocamlopt -o $@ $< -ppx ./src/ppx_string.native
+	ocamlfind ocamlopt -o $@ $< $(OCAMLOPT_FLAGS) -ppx ./src/ppx_string.native -linkpkg
 
 clean:
 	rm -f {src,src_test}/*.{cmi,cmx,o,native}
@@ -41,7 +41,7 @@ FLYMAKE_BUILD=$(BUILD_DIR)/flymake-last-build.txt
 
 .PHONY: flymake.ml.check
 flymake.ml.check:
-	@(ocamlfind ocamlopt $(PPX_STRING_PACKAGES) -c $(CHK_SOURCES) -o /tmp/flymake_temp.cmx 2>&1) | sed 's/_flymake//g' | tee $(FLYMAKE_BUILD)
+	@(ocamlfind ocamlopt  $(OCAMLOPT_FLAGS) $(PPX_STRING_PACKAGES) -c $(CHK_SOURCES) -o /tmp/flymake_temp.cmx 2>&1) | sed 's/_flymake//g' | tee $(FLYMAKE_BUILD)
 
 .PHONY: flymake.mli.check
 flymake.mli.check: flymake.ml.check
