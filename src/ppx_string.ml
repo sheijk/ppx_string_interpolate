@@ -5,7 +5,6 @@ open Parsetree
 open Longident
 
 type part = String of string | Var of string
-[@@deriving Show]
 
 exception Parse_error of string * int
 

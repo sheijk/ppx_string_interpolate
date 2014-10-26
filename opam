@@ -1,4 +1,4 @@
-opam-version: "1.1.1"
+opam-version: "1.2"
 maintainer: "Jan Rehders <jan@sheijk.net>"
 authors: [ "Jan Rehders <jan@sheijk.net>" ]
 license: "Public domain"
@@ -14,6 +14,5 @@ remove: ["make" "uninstall"]
 depends: [
   "ppx_tools" {>= "0.99.2"}
   "sedlex" {>= "1.99.2"}
-  "ppx_deriving" {>= "0.3"}
 ]
-available: [ocaml-version >= "4.02.0"]
+available: [ocaml-version >= "4.02.1"]

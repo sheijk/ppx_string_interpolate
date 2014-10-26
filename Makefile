@@ -1,5 +1,5 @@
 
-PPX_STRING_PACKAGES = -package ppx_tools -package ppx_deriving -package ppx_tools.metaquot -package sedlex
+PPX_STRING_PACKAGES = -package ppx_tools -package ppx_tools.metaquot -package sedlex
 
 all: src/ppx_string.native src_test/app.native
 

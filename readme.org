@@ -24,6 +24,14 @@ See directory src_test for examples on what to do and not to do.
   
 Test by running 'make test'
 
+* Todo
+
+  - support arbitrary OCaml expressions inside $(...). Needs to run the OCaml
+    lexer on the string, skip over balanced parenthesis and pass this to OCaml
+    Parse.expression.
+  - check if to_str_code can be simplified using Ast_convenience.list
+  - Use Utf8 instead of Latin1, check for valid identifier
+
 * Contact
 
 Mail to jan@sheijk.net for questions and comments.
