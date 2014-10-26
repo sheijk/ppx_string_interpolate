@@ -47,22 +47,13 @@ let parse_string str =
   List.rev !parts
 
 let to_str_code parts =
-  let rec to_list =
-    function
-    | [] ->
-       [%expr []]
-    | hd :: tl ->
-       let hd_expr =
-         match hd with
-           | String str ->
-              Exp.constant ~loc:!(Ast_helper.default_loc) (Const_string (str, None))
-           | Var name ->
-              Exp.ident @@ { txt = Longident.parse name; loc = !(Ast_helper.default_loc) }
-       in
-       [%expr ([%e hd_expr] :: [%e to_list tl])]
+  let to_str = function
+    | String str ->
+       Exp.constant ~loc:!(Ast_helper.default_loc) (Const_string (str, None))
+    | Var name ->
+       Exp.ident @@ { txt = Longident.parse name; loc = !(Ast_helper.default_loc) }
   in
-  let parts_list = to_list parts in
-  [%expr String.concat "" [%e parts_list]]
+  [%expr String.concat "" [%e Ast_convenience.list (List.map to_str parts)]]
 
 let getenv_mapper argv =
   (* Our getenv_mapper only overrides the handling of expressions in the default mapper. *)
