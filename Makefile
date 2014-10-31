@@ -1,6 +1,7 @@
 
 PPX_STRING_PACKAGES = -package ppx_tools -package ppx_tools.metaquot -package sedlex
 
+.PHONY: all
 all: src/ppx_string_interpolate src_test/app
 
 src/ppx_string_interpolate: src/ppx_string_interpolate.ml
@@ -9,6 +10,7 @@ src/ppx_string_interpolate: src/ppx_string_interpolate.ml
 src_test/%: src_test/%.ml src/ppx_string_interpolate
 	ocamlfind ocamlopt -o $@ $< $(OCAMLOPT_FLAGS) -ppx ./src/ppx_string_interpolate -linkpkg
 
+.PHONY: clean
 clean:
 	rm -f {src,src_test}/*.{cmi,cmx,o,native}
 	$(foreach case, $(FAIL_CASES), rm -f src_test/fail_$(case).{out,test})
@@ -20,6 +22,7 @@ INSTALL_FILES = META src/ppx_string_interpolate
 install:
 	ocamlfind install ppx_string_interpolate $(INSTALL_FILES)
 
+.PHONY: uninstall
 uninstall:
 	ocamlfind remove ppx_string_interpolate
 
