@@ -8,9 +8,6 @@ type part = String of string | Var of string
 
 exception Parse_error of string * int
 
-(** Using \\ works but will produce warnings from the lexer. *)
-let escapeChar = '$'
-
 let parse_string str =
   let parts = ref [] in
   let add item =
@@ -55,8 +52,8 @@ let to_str_code parts =
   in
   [%expr String.concat "" [%e Ast_convenience.list (List.map to_str parts)]]
 
-let getenv_mapper argv =
-  (* Our getenv_mapper only overrides the handling of expressions in the default mapper. *)
+let ppx_string_interpolate_mapper argv =
+  (* Our ppx_string_interpolate_mapper only overrides the handling of expressions in the default mapper. *)
   { default_mapper with
     expr = fun mapper expr ->
       match expr with
@@ -92,5 +89,5 @@ let getenv_mapper argv =
       | x -> default_mapper.expr mapper x;
   }
 
-let () = register "str" getenv_mapper
+let () = register "str" ppx_string_interpolate_mapper
  
