@@ -1,20 +1,20 @@
 
 PPX_STRING_PACKAGES = -package ppx_tools -package ppx_tools.metaquot -package sedlex
 
-all: src/ppx_string.native src_test/app.native
+all: src/ppx_string_interpolate src_test/app
 
-src/ppx_string.native: src/ppx_string.ml
+src/ppx_string_interpolate: src/ppx_string_interpolate.ml
 	ocamlfind ocamlopt -o $@ $< $(OCAMLOPT_FLAGS) $(PPX_STRING_PACKAGES) -linkpkg
 
-src_test/%.native: src_test/%.ml src/ppx_string.native
-	ocamlfind ocamlopt -o $@ $< $(OCAMLOPT_FLAGS) -ppx ./src/ppx_string.native -linkpkg
+src_test/%: src_test/%.ml src/ppx_string_interpolate
+	ocamlfind ocamlopt -o $@ $< $(OCAMLOPT_FLAGS) -ppx ./src/ppx_string_interpolate -linkpkg
 
 clean:
 	rm -f {src,src_test}/*.{cmi,cmx,o,native}
 	$(foreach case, $(FAIL_CASES), rm -f src_test/fail_$(case).{out,test})
 
 
-INSTALL_FILES = META src/ppx_string.native
+INSTALL_FILES = META src/ppx_string_interpolate
 
 .PHONY: install
 install:
@@ -29,13 +29,13 @@ uninstall:
 FAIL_CASES = invalid_var invalid_var_name no_closing_paren unescaped_dollar dollar_at_end_of_string
 
 src_test/fail_%.test src_test/fail_%.out: src_test/fail_%.ml
-	-(ocamlfind ocamlopt -o $@ $< -ppx ./src/ppx_string.native 2>&1) > $(@:.test=.out)
+	-(ocamlfind ocamlopt -o $@ $< -ppx ./src/ppx_string_interpolate 2>&1) > $(@:.test=.out)
 	grep "File \"$(<)\", line 4" $(@:.test=.out) > /dev/null
 	touch $@
 
 .PHONY: test
-test: src_test/app.native $(foreach case, $(FAIL_CASES), src_test/fail_$(case).test)
-	./src_test/app.native
+test: src_test/app $(foreach case, $(FAIL_CASES), src_test/fail_$(case).test)
+	./src_test/app
 
 $(BUILD_DIR)/.exists:
 	mkdir -p $(BUILD_DIR)

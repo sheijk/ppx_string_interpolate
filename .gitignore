@@ -1,5 +1,4 @@
 *.annot
-/*.native
 /_build
 /coverage_report
 bisect*.out
@@ -10,3 +9,5 @@ bisect*.out
 /src_test/*.out
 /src_test/*.test
 /build/
+/src/ppx_string_interpolate
+/src_test/app
