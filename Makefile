@@ -12,7 +12,7 @@ src_test/%: src_test/%.ml src/ppx_string_interpolate
 
 .PHONY: clean
 clean:
-	rm -f {src,src_test}/*.{cmi,cmx,o,native}
+	rm -f {src,src_test}/*.{cmi,cmx,o} src/ppx_string_interpolate src_test/app
 	$(foreach case, $(FAIL_CASES), rm -f src_test/fail_$(case).{out,test})
 
 
