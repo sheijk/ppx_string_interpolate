@@ -1,8 +1,6 @@
 *.annot
-/_build
-/coverage_report
-bisect*.out
 *.cmi
+*.cmt
 *.cmx
 *.native
 *.o

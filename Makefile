@@ -1,14 +1,21 @@
 
 PPX_STRING_PACKAGES = -package ppx_tools -package ppx_tools.metaquot -package sedlex
+OCAMLOPT_FLAGS += -bin-annot -annot
 
 .PHONY: all
 all: src/ppx_string_interpolate src_test/app
 
-src/ppx_string_interpolate: src/ppx_string_interpolate.ml
-	ocamlfind ocamlopt -o $@ $< $(OCAMLOPT_FLAGS) $(PPX_STRING_PACKAGES) -linkpkg
+src_test/%.cmx: src_test/%.ml
+	ocamlfind ocamlopt -c -o $@ $< $(OCAMLOPT_FLAGS) $(PPX_STRING_PACKAGES) -ppx ./src/ppx_string_interpolate
 
-src_test/%: src_test/%.ml src/ppx_string_interpolate
+src_test/%: src_test/%.cmx src/ppx_string_interpolate
 	ocamlfind ocamlopt -o $@ $< $(OCAMLOPT_FLAGS) -ppx ./src/ppx_string_interpolate -linkpkg
+
+%.cmx: %.ml
+	ocamlfind ocamlopt -c -o $@ $< $(OCAMLOPT_FLAGS) $(PPX_STRING_PACKAGES)
+
+src/ppx_string_interpolate: src/ppx_string_interpolate.cmx
+	ocamlfind ocamlopt -o $@ $< $(OCAMLOPT_FLAGS) $(PPX_STRING_PACKAGES) -linkpkg
 
 .PHONY: clean
 clean:
